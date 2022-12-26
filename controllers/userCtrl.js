@@ -11,8 +11,8 @@ const getUsers=async(req,res)=>{
     try{
         const data=await User.findAll({ });
         res.status(200).json({data:data});
-    } catch(e){
-        res.status(500)
+    } catch(error){
+        console.log('error: ',error.message)
     }
     
 }
@@ -23,14 +23,23 @@ const addUser=async(req,res)=>{
         var addlastName=req.body.lastName;
         var addemail=req.body.email;
         var addbook_id=req.body.book_id;
-        const data=await User.create({
-            firstName:addfirstName,
-            lastName:addlastName,
-            email:addemail,
-            book_id:addbook_id,
-        });
-        res.status(200).json({data:data});
-        
+        if (addbook_id){
+            const data=await User.create({
+                firstName:addfirstName,
+                lastName:addlastName,
+                email:addemail,
+                book_id:addbook_id
+            });
+            res.status(200).json({data:data});
+        }
+        else{
+            const data=await User.create({
+                firstName:addfirstName,
+                lastName:addlastName,
+                email:addemail
+            });
+            res.status(200).json({data:data});
+        }       
     } catch(e){
         let message;
         e.errors.forEach(error=>{
@@ -77,24 +86,38 @@ const deleteUser=async(req,res)=>{
             }
         });
         res.status(200).json({data:data});
-    } catch (e){
-        res.status(500)
+    } catch (error){
+        console.log('error: ',error.message)
     }
 }
 
 const getUserBook=async(req,res)=>{
     try
-    {const data=await User.findAll({
-                        attibutes:["firstName","lastName"],
-                        include:[{
-                            model:Book,
-                            attibutes:["bookName"]
-                        }],
-                        where:{id:req.params.id}
+    {
+        const data=await User.findOne({
+                        attibutes:["firstName","lastName","id"],
                     })
-    res.status(200).json({data:data})}
+        const bookData=await data.getBooks();
+        res.status(200).json({data:data,bookData:bookData})
+    }
+        catch(e){
+            res.status(500)
+    }
+}
+
+
+const searchUser=async(req,res)=>{
+    const search=req.params.key
+    console.log(search)
+    try{
+        const data=await User.findOne({
+            name:{[Op.like]: `%${search}`}
+            
+        })
+        res.status(200).json({data:data})
+    }
     catch(e){
-        res.status(500)
+        console.log('error: ',e.message)
     }
 }
 
@@ -104,5 +127,6 @@ module.exports={
     updateUser,
     deleteUser,
 
-    getUserBook
+    getUserBook,
+    searchUser
 }

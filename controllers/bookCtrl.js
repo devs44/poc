@@ -12,8 +12,7 @@ const getBooks=async(req,res)=>{
         res.status(200).json({data:data});
     }
     catch(e){
-        res.send(500)
-        console.log(e)
+        console.log('error: ',error.message)
     }
     
 }
@@ -38,8 +37,7 @@ const addBook=async(req,res)=>{
         res.status(200).json({data:data});
         
     } catch(e){
-        res.status(500)
-        console.log(e)
+        console.log('error: ',error.message)
     }
     
 }
@@ -56,7 +54,7 @@ const updateBook=async(req,res)=>{
         res.status(200).json({data:data});
     }
     catch(e){
-        res.status(500)
+        console.log('error: ',error.message)
     }
 }
 
@@ -69,17 +67,33 @@ const deleteBook=async(req,res)=>{
         });
         res.status(200).json({data:data});
     } catch (e){
-        res.status(500)
-        console.log(e)
+        console.log('error: ',error.message)
 
     }
 }
 
-
+const searchBook=async(req,res)=>{
+    console.log(req.params.key)
+    const search=await req.params.key
+    try{
+        const data=await Book.findAll({
+            where:{
+                [Op.like]: `%${search}%`
+                    }
+            })
+                
+        res.status(200).json({data:data});
+    }
+    catch(e){
+        console.log('error: ',e.message)
+    }
+}
 
 module.exports={
     getBooks,
     addBook,
     updateBook,
-    deleteBook
+    deleteBook,
+
+    searchBook
 }

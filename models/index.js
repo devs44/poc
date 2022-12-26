@@ -25,12 +25,15 @@ db.sequelize=sequelize;
 
 db.user=require('./user')(sequelize,DataTypes,Model)
 db.book=require('./book')(sequelize,DataTypes,Model)
+db.author=require('./author')(sequelize,DataTypes,Model)
 
-
-
+//user,book-many to many
 db.user.belongsToMany(db.book,{through:'user_book'});
 db.book.belongsToMany(db.user,{through:'user_book'});
 
+//author,book-one to many
+db.author.hasMany(db.book);
+db.book.belongsTo(db.author);
 
 
 db.DataTypes=DataTypes;
