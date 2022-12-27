@@ -2,7 +2,11 @@ module.exports=(sequelize,DataTypes,Model)=>{
     
 
   const Author = sequelize.define('authors', {
-      
+      //ad author id
+      // authorId:{
+      //   type:DataTypes.INTEGER,
+
+      // }
       authorName: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -10,6 +14,11 @@ module.exports=(sequelize,DataTypes,Model)=>{
       },
       
       bookName: {
+        type: DataTypes.STRING,
+        allowNull:false
+       
+      },
+      authorId: {
         type: DataTypes.STRING,
         allowNull:false
        

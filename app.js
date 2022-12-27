@@ -17,6 +17,8 @@ app.get('/',(req,res)=>{
     res.send("Hello world")
 })
 
+
+
 //users
 app.get('/users',useCtrl.getUsers)
 app.post('/addUser',useCtrl.addUser)
@@ -44,6 +46,7 @@ app.get('/searchAuthors/:key',authorCtrl.searchAuthor)
 
 //users-books
 app.get('/users/books',useCtrl.getUserBook)
+
 
 //author-books
 app.get('/author/books',authorCtrl.getAuthorBook)

@@ -89,7 +89,7 @@ const searchAuthor=async(req,res)=>{
     const search=await req.params.key
     console.log(search)
     try{
-        const data=await Author.findOne({
+        const data=await Author.findAll({
             where:{
                 [Op.like]: `${search}`
                     }

@@ -4,7 +4,7 @@ const db=require('../models')
 const User=db.user;
 const Book=db.book;
 
-const {Sequelize,Op,QueryTypes}=require('sequelize')
+const {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize')
 
 
 const getUsers=async(req,res)=>{
@@ -39,7 +39,7 @@ const addUser=async(req,res)=>{
                 email:addemail
             });
             res.status(200).json({data:data});
-        }       
+        }     
     } catch(e){
         let message;
         e.errors.forEach(error=>{
@@ -91,6 +91,24 @@ const deleteUser=async(req,res)=>{
     }
 }
 
+const searchUser=async(req,res)=>{
+    const search=req.params.key
+    console.log(search)
+    try{
+        const data=await User.findAll({
+            where:{
+                firstName:{
+                    [Op.like]: `%${search}%`
+                }
+            } 
+        })
+        res.status(200).json({data:data})
+    }
+    catch(e){
+        console.log('error: ',e.message)
+    }
+}
+
 const getUserBook=async(req,res)=>{
     try
     {
@@ -106,27 +124,16 @@ const getUserBook=async(req,res)=>{
 }
 
 
-const searchUser=async(req,res)=>{
-    const search=req.params.key
-    console.log(search)
-    try{
-        const data=await User.findOne({
-            name:{[Op.like]: `%${search}`}
-            
-        })
-        res.status(200).json({data:data})
-    }
-    catch(e){
-        console.log('error: ',e.message)
-    }
-}
+
 
 module.exports={
     getUsers,
     addUser,
     updateUser,
     deleteUser,
+    searchUser,
 
     getUserBook,
-    searchUser
+    
+    
 }

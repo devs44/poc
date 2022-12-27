@@ -22,10 +22,13 @@ module.exports=(sequelize,DataTypes,Model)=>{
           msg: "Must be a valid email address",
         }
        }
-      },
-      book_id:{
-        type:DataTypes.INTEGER
       }
+      // book_id:{
+      //   type:DataTypes.INTEGER,
+      //   validate:{
+      //     isin
+      //   }
+      // }
     },
    
     

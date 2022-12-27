@@ -12,7 +12,7 @@ const getBooks=async(req,res)=>{
         res.status(200).json({data:data});
     }
     catch(e){
-        console.log('error: ',error.message)
+        console.log('error: ',e.message)
     }
     
 }
@@ -37,7 +37,7 @@ const addBook=async(req,res)=>{
         res.status(200).json({data:data});
         
     } catch(e){
-        console.log('error: ',error.message)
+        console.log('error: ',e.message)
     }
     
 }
@@ -54,7 +54,7 @@ const updateBook=async(req,res)=>{
         res.status(200).json({data:data});
     }
     catch(e){
-        console.log('error: ',error.message)
+        console.log('error: ',e.message)
     }
 }
 
@@ -67,7 +67,7 @@ const deleteBook=async(req,res)=>{
         });
         res.status(200).json({data:data});
     } catch (e){
-        console.log('error: ',error.message)
+        console.log('error: ',e.message)
 
     }
 }
@@ -78,8 +78,10 @@ const searchBook=async(req,res)=>{
     try{
         const data=await Book.findAll({
             where:{
-                [Op.like]: `%${search}%`
-                    }
+                bookName:{
+                    [Op.like]: `%${search}%`
+                }         
+                }
             })
                 
         res.status(200).json({data:data});
