@@ -4,7 +4,7 @@ module.exports = {
           'authors',
           'authorId',
           {
-              allowNull: true,
+              allowNull: false,
               type: Sequelize.INTEGER
           })
   },

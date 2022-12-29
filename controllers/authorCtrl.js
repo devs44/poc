@@ -25,9 +25,11 @@ const addAuthor=async(req,res)=>{
     try{
         var addauthorName=req.body.authorName;
         var addbookName=req.body.bookName;
+        var addauthorId=req.body.authorId;
         const data=await Author.create({
             authorName:addauthorName,
-            bookName:addbookName
+            bookName:addbookName,
+            authorId:addauthorId
         });
         res.status(200).json({data:data});
         

@@ -46,6 +46,7 @@ app.get('/searchAuthors/:key',authorCtrl.searchAuthor)
 
 //users-books
 app.get('/users/books',useCtrl.getUserBook)
+app.post('/user/book',useCtrl.addUserBook)
 
 
 //author-books

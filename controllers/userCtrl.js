@@ -22,25 +22,15 @@ const addUser=async(req,res)=>{
         var addfirstName=req.body.firstName;
         var addlastName=req.body.lastName;
         var addemail=req.body.email;
-        var addbook_id=req.body.book_id;
-        if (addbook_id){
-            const data=await User.create({
-                firstName:addfirstName,
-                lastName:addlastName,
-                email:addemail,
-                book_id:addbook_id
-            });
-            res.status(200).json({data:data});
-        }
-        else{
+        
             const data=await User.create({
                 firstName:addfirstName,
                 lastName:addlastName,
                 email:addemail
             });
             res.status(200).json({data:data});
-        }     
-    } catch(e){
+        }   
+    catch(e){
         let message;
         e.errors.forEach(error=>{
             switch(error.validatorKey){
@@ -112,7 +102,7 @@ const searchUser=async(req,res)=>{
 const getUserBook=async(req,res)=>{
     try
     {
-        const data=await User.findOne({
+        const data=await User.findAll({
                         attibutes:["firstName","lastName","id"],
                     })
         const bookData=await data.getBooks();
@@ -121,6 +111,27 @@ const getUserBook=async(req,res)=>{
         catch(e){
             res.status(500)
     }
+}
+
+const addUserBook=async(req,res)=>{
+    
+        const Userdata=await User.create({
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
+            email:req.body.email
+        })
+        if(Userdata && Userdata.id){
+            await Book.create({
+                bookName:req.body.bookName,
+                genre:req.body.genre,
+                authorName:req.body.authorName,
+                language:req.body.language,
+                price:req.body.price,
+                Userid:Userdata.id
+                
+            })
+        }
+        
 }
 
 
@@ -134,6 +145,6 @@ module.exports={
     searchUser,
 
     getUserBook,
-    
+    addUserBook
     
 }

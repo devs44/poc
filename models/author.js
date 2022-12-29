@@ -19,7 +19,7 @@ module.exports=(sequelize,DataTypes,Model)=>{
        
       },
       authorId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull:false
        
       }
