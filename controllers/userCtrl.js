@@ -4,8 +4,9 @@ const db=require('../models')
 const User=db.user;
 const Book=db.book;
 
-const {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize')
-
+const {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize');
+const { sequelize } = require('../models');
+const bcrypt = require('bcrypt');
 
 const getUsers=async(req,res)=>{
     try{
@@ -19,14 +20,15 @@ const getUsers=async(req,res)=>{
 
 const addUser=async(req,res)=>{
     try{
-        var addfirstName=req.body.firstName;
-        var addlastName=req.body.lastName;
-        var addemail=req.body.email;
-        
+        const firstName=req.body.firstName;
+        const lastName=req.body.lastName;
+        const email=req.body.email;
+        const userId=req.body.userId;
             const data=await User.create({
-                firstName:addfirstName,
-                lastName:addlastName,
-                email:addemail
+                firstName:firstName,
+                lastName:lastName,
+                email:email,
+                userId:userId
             });
             res.status(200).json({data:data});
         }   
@@ -99,43 +101,56 @@ const searchUser=async(req,res)=>{
     }
 }
 
-const getUserBook=async(req,res)=>{
-    try
-    {
-        const data=await User.findAll({
-                        attibutes:["firstName","lastName","id"],
-                    })
-        const bookData=await data.getBooks();
-        res.status(200).json({data:data,bookData:bookData})
-    }
-        catch(e){
-            res.status(500)
-    }
-}
 
-const addUserBook=async(req,res)=>{
-    
-        const Userdata=await User.create({
-            firstName:req.body.firstName,
-            lastName:req.body.lastName,
-            email:req.body.email
+
+
+const registerUser=async(req,res)=>{
+       const firstName=req.body.firstName
+       const lastName=req.body.lastName
+       const email=req.body.email
+       const password=req.body.password
+       const confirm_password=req.body.confirm_password
+       const check_email=await User.findOne({
+            where:{
+                email:email
+            }
+       })
+       if(check_email!=null){
+        return res.render('register',{
+            message:'Email is already in use'
         })
-        if(Userdata && Userdata.id){
-            await Book.create({
-                bookName:req.body.bookName,
-                genre:req.body.genre,
-                authorName:req.body.authorName,
-                language:req.body.language,
-                price:req.body.price,
-                Userid:Userdata.id
-                
-            })
-        }
-        
+       }
+       else if(password!=confirm_password){
+        return res.render('register',{
+            message:'Passwords donot match!'
+        })
+       }
+       let hashedPassword=await bcrypt.hash(password,8)
+       const data=await User.create({
+        firstName:firstName,
+        lastName:lastName,
+        email:email,
+        password:hashedPassword
+       })
+       res.render('login',{
+        message:'User registered'
+       })
 }
 
-
-
+const loginUser=async(req,res)=>{
+    const user=await User.findOne({
+        where:{
+            email:req.body.email
+        }
+    })
+    let password_valid=await bcrypt.compare(req.body.password,user.password)
+    if(password_valid){
+        res.render('index')
+    }
+    // else{
+    //     res.render("login")
+    // }
+}
 
 module.exports={
     getUsers,
@@ -144,7 +159,9 @@ module.exports={
     deleteUser,
     searchUser,
 
-    getUserBook,
-    addUserBook
+    registerUser,
+    loginUser
+    // getUserBook,
+    // addUserBook
     
 }

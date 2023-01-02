@@ -22,13 +22,16 @@ module.exports=(sequelize,DataTypes,Model)=>{
           msg: "Must be a valid email address",
         }
        }
+      },
+      userId:{
+        type:DataTypes.INTEGER,
+        allowNull:true,
+        unique:true
+      },
+      password:{
+        type:DataTypes.STRING,
+        
       }
-      // book_id:{
-      //   type:DataTypes.INTEGER,
-      //   validate:{
-      //     isin
-      //   }
-      // }
     },
    
     

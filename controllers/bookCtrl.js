@@ -19,20 +19,23 @@ const getBooks=async(req,res)=>{
 
 const addBook=async(req,res)=>{
     try{
-        var addbookName=req.body.bookName;
-        var addgenre=req.body.genre;
-        var addauthorName=req.body.authorName;
-        var addlanguage=req.body.language;
-        var addprice=req.body.price;
-        var addDate=new Date();
-        var addedDate=addDate.toString();
+        const bookName=req.body.bookName;
+        const genre=req.body.genre;
+        const authorName=req.body.authorName;
+        const language=req.body.language;
+        const price=req.body.price;
+        const addDate=new Date();
+        const addedDate=addDate.toString();
+        const bookId=req.body.bookId;
+
         const data=await Book.create({
-            bookName:addbookName,
-            genre:addgenre,
-            authorName:addauthorName,
-            language:addlanguage,
-            price:addprice,
-            publishDate:addedDate
+            bookName:bookName,
+            genre:genre,
+            authorName:authorName,
+            language:language,
+            price:price,
+            publishDate:addedDate,
+            bookId:bookId
         });
         res.status(200).json({data:data});
         
@@ -90,6 +93,9 @@ const searchBook=async(req,res)=>{
         console.log('error: ',e.message)
     }
 }
+
+// const issueBook=async
+
 
 module.exports={
     getBooks,

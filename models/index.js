@@ -26,10 +26,12 @@ db.sequelize=sequelize;
 db.user=require('./user')(sequelize,DataTypes,Model)
 db.book=require('./book')(sequelize,DataTypes,Model)
 db.author=require('./author')(sequelize,DataTypes,Model)
+db.userBooks=require('./user_book')(sequelize,DataTypes,db.user,db.book)
+
 
 //user,book-many to many
-// db.user.belongsToMany(db.book,{through:'user_book'});
-// db.book.belongsToMany(db.user,{through:'user_book'});
+db.user.belongsToMany(db.book,{through:db.userBooks});
+db.book.belongsToMany(db.user,{through:db.userBooks});
 
 //author,book-one to many
 db.author.hasMany(db.book,{"targetKey":"authorId"});
@@ -37,5 +39,5 @@ db.book.belongsTo(db.author,{"targetKey":"authorId"});
 
 
 db.DataTypes=DataTypes;
-db.sequelize.sync({force:true})
+db.sequelize.sync({force:false})
 module.exports=db

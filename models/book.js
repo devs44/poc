@@ -9,7 +9,8 @@ module.exports=(sequelize,DataTypes,Model)=>{
     authorName: DataTypes.STRING,
     language: DataTypes.STRING,
     price: DataTypes.INTEGER,
-    publishDate: DataTypes.DATE
+    publishDate: DataTypes.DATE,
+    bookId:DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Book',
