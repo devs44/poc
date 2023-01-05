@@ -25,10 +25,17 @@ const getUserBook=async(req,res)=>{
 }
 
 
+// function checkookId(req,res){
+//     const bookId=req.body.bookId
+//     var count=0
+//     for(count,count<=3,count++){
 
+//     }
+// }
 
 const addUserBook=async(req,res)=>{
-    const user_id=req.body.user_id;
+    try{
+        const user_id=req.body.user_id;
     const book_id=req.body.book_id;
     const checkUserId=await User.findOne({
         where:{
@@ -47,12 +54,6 @@ const addUserBook=async(req,res)=>{
 
     //     }
     // }
-
-
-
-
-
-
     const checkBookId=await Book.findOne({
         where:{
             bookId:book_id
@@ -70,7 +71,11 @@ const addUserBook=async(req,res)=>{
         })
         res.status(200).json({data:data})
         console.log("data found")
-    }   
+    }
+    }
+    catch(error){
+        console.log("error: ",errror)
+    }  
 }
 
 

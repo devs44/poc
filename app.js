@@ -1,18 +1,31 @@
-const express=require('express')
-const bodyParser=require('body-parser')
-const path=require('path')
-const fs=require('fs')
-const app =express()
-const PORT=5000
-
+var express=require('express')
+var bodyParser=require('body-parser')
+var csrf=require('csurf')
+var session=require('express-session')
+var app =express()
+var PORT=5000
+const SequelizeStore=require("connect-session-sequelize")(session.Store);
+const db = require('./models/index')
+const csrfProtection=csrf()
 
 app.use(bodyParser.json())
-app.use(express.urlencoded({extended:'false'}))
-app.use(express.static(__dirname + '/public'));
+app.use(express.urlencoded({extended:'true'}))
+app.use(session({
+    store:new SequelizeStore({
+        db:db.sequelize,
+    }),
+    secret:"secret",
+    resave:false,
+    saveUninitialized:false 
+}))
+
+// app.use(csrfProtection)
+
 app.set('view engine','hbs')
 
 require('./models/index')
 
+const indexCtrl=require('./controllers/indexCtrl')
 const useCtrl=require('./controllers/userCtrl')
 const bookCtrl=require('./controllers/bookCtrl')
 const authorCtrl=require('./controllers/authorCtrl')
@@ -21,22 +34,16 @@ const userBookCtrl=require('./controllers/userBookCtrl')
 
 
 
-app.get('/',(req,res)=>{
-    res.render("index")
-})
+app.get('/',indexCtrl.index)
+app.get('/register',indexCtrl.register)
+app.get('/login',indexCtrl.login)
+app.get('/logout',indexCtrl.logout)
+app.get('/forgotPassword',indexCtrl.forgotPassword)
 
-app.get('/register',(req,res)=>{
-    res.render("register")
-})
-
-app.get('/login',(req,res)=>{
-    res.render("login")
-})
 
 app.post("/auth/register", useCtrl.registerUser)
-
 app.post("/auth/login",useCtrl.loginUser)
-
+app.post("/auth/forgotPassword",useCtrl.forgotPassword)
 
 //users
 app.get('/users',useCtrl.getUsers)

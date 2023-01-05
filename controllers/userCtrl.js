@@ -1,12 +1,14 @@
 
-const db=require('../models')
+var session=require('express-session')
 
-const User=db.user;
-const Book=db.book;
+var db=require('../models')
 
-const {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize');
-const { sequelize } = require('../models');
-const bcrypt = require('bcrypt');
+var User=db.user;
+var Book=db.book;
+
+var {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize');
+var { sequelize } = require('../models');
+var bcrypt = require('bcrypt');
 
 const getUsers=async(req,res)=>{
     try{
@@ -14,8 +16,7 @@ const getUsers=async(req,res)=>{
         res.status(200).json({data:data});
     } catch(error){
         console.log('error: ',error.message)
-    }
-    
+    }   
 }
 
 const addUser=async(req,res)=>{
@@ -101,10 +102,8 @@ const searchUser=async(req,res)=>{
     }
 }
 
-
-
-
 const registerUser=async(req,res)=>{
+    try{
        const firstName=req.body.firstName
        const lastName=req.body.lastName
        const email=req.body.email
@@ -135,22 +134,82 @@ const registerUser=async(req,res)=>{
        res.render('login',{
         message:'User registered'
        })
+    }
+    catch(error){
+        console.log('error',error.message)
+    } 
 }
 
 const loginUser=async(req,res)=>{
-    const user=await User.findOne({
+    try{
+        const user=await User.findOne({
+            where:{
+                email:req.body.email
+            }
+        })
+        if(user){
+            let password_valid=await bcrypt.compare(req.body.password,user.password)
+            if(password_valid){
+                req.session.isLoggedIn=1; 
+                res.render("index",{userExits:req.session.isLoggedIn==1})
+            }
+            else{
+                const currentDate=new Date()
+                const currentTime=currentDate.getTime()
+                if(user.count==3 && user.pwdTimeStamp==null){
+                    user.pwdTimeStamp=currentTime+(30*60000)
+                    user.save()
+                    console.log("you have been blocked for 30minutes")
+                    res.render("login",{
+                        message:"You  have been blocked for 30 minutes"
+                    })
+                }
+                else if(user.count==3 && currentTime>=user.pwdTimeStamp){
+                    user.pwdTimeStamp=null,
+                    user.count=0
+                    user.save()
+                    res.render("login",{
+                        message:"Password not valid"
+                    })
+                }
+                else if(user.count==3 && currentTime<user.pwdTimeStamp){
+                    console.log("you have been blocked,try after 30minutes")
+                    res.render("login",{
+                        message:"You have been blocked,try after 30 minutes"
+                    })
+                }
+                else{
+                    user.count+=1
+                    user.save()
+                    res.render("login",{
+                        message:"Password is not valid"
+                    })
+                }
+            }
+        }
+        
+    }
+    catch(error){
+        console.log('error',error.message)
+    }
+}
+
+const forgotPassword=async(req,res)=>{
+    const email=req.body.email
+    const checkEmail=await User.findOne({
         where:{
-            email:req.body.email
+            email:email
         }
     })
-    let password_valid=await bcrypt.compare(req.body.password,user.password)
-    if(password_valid){
-        res.render('index')
+    if(checkEmail!=null){
+        console.log("Email exists")
+    }else{
+        console.log("Email doesnot exists")
     }
-    // else{
-    //     res.render("login")
-    // }
 }
+
+
+
 
 module.exports={
     getUsers,
@@ -160,7 +219,8 @@ module.exports={
     searchUser,
 
     registerUser,
-    loginUser
+    loginUser,
+    forgotPassword
     // getUserBook,
     // addUserBook
     

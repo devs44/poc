@@ -31,6 +31,14 @@ module.exports=(sequelize,DataTypes,Model)=>{
       password:{
         type:DataTypes.STRING,
         
+      },
+      count:{
+        type:DataTypes.INTEGER,
+        defaultValue:0
+      },
+      pwdTimeStamp:{
+        type:DataTypes.DATE,
+        defaultValue:null
       }
     },
    
