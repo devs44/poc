@@ -1,3 +1,5 @@
+
+const {Sequelize,DataTypes,Model}=require('sequelize')
 module.exports=(sequelize,DataTypes,Model)=>{
     
 
@@ -23,11 +25,7 @@ module.exports=(sequelize,DataTypes,Model)=>{
         }
        }
       },
-      userId:{
-        type:DataTypes.INTEGER,
-        allowNull:true,
-        unique:true
-      },
+      
       password:{
         type:DataTypes.STRING,
         
@@ -39,7 +37,17 @@ module.exports=(sequelize,DataTypes,Model)=>{
       pwdTimeStamp:{
         type:DataTypes.DATE,
         defaultValue:null
-      }
+      },
+      token:{
+        type:DataTypes.STRING,
+        defaultValue:null
+      },
+      UID:{
+        type:DataTypes.UUID,
+        allowNull:false,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+      },
     },
    
     

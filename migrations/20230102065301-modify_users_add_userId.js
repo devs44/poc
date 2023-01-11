@@ -4,8 +4,10 @@ module.exports = {
           'Users',
           'userID',
           {
-              allowNull: true,
-              type: Sequelize.INTEGER
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            // allowNull: false,
+            // primaryKey: true
           })
   },
 

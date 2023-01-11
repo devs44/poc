@@ -49,10 +49,20 @@ const forgotPassword=async(req,res)=>{
         console.log("error: ",error.message)
     }
 }
+
+const updatePassword=async(req,res)=>{
+    try{
+        res.render('updatePassword')
+    }
+    catch(error){
+        console.log("error: ",error.message)
+    }
+}
 module.exports={
     index,
     register,
     login,
     logout,
-    forgotPassword
+    forgotPassword,
+    updatePassword
 }

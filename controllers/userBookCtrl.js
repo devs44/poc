@@ -20,62 +20,43 @@ const getUserBook=async(req,res)=>{
         res.status(200).json({data:data,bookData:bookData})
     }
         catch(e){
-            res.status(500)
+            res.status(400).send({success:false,message:"error"})
     }
 }
 
 
-// function checkookId(req,res){
-//     const bookId=req.body.bookId
-//     var count=0
-//     for(count,count<=3,count++){
-
-//     }
-// }
 
 const addUserBook=async(req,res)=>{
     try{
-        const user_id=req.body.user_id;
-    const book_id=req.body.book_id;
-    const checkUserId=await User.findOne({
-        where:{
-            userId:user_id
-        }
-    })
-    // if(checkUserId==Null){
-    //     res.send("Data not found")
-    // }else{
-    //     const checkBookId=await Book.findOne({
-    //         where:{
-    //             bookId:book_id
-    //         }
-    //     })
-    //     for(var count=0;count<=3;count++){
-
-    //     }
-    // }
-    const checkBookId=await Book.findOne({
-        where:{
-            bookId:book_id
-        }
-    })
-    // console.log(checkUserId)
-    // console.log(checkBookId)
-    
-    if(checkUserId==null && checkBookId==null){
-        res.send("Data not found")
-    }else{
-        const data=await UserBook.create({
-            UserId:user_id,
-            BookId:book_id
+        const uid=req.body.uid;
+        const bid=req.body.bid;
+        console.log(req.body.bid,"DDDDDDDd")
+        const checkUserId=await User.findOne({
+            where:{
+                UID:uid
+            }
         })
-        res.status(200).json({data:data})
-        console.log("data found")
+        const checkBookId=await Book.findOne({
+            where:{
+                BID:bid
+            }
+        })
+        console.log(checkBookId,'DDDDDDDDDDDddd')
+    
+    
+        if(checkUserId==null && checkBookId==null){
+            res.send("Data not found")
+        }else{
+            const data=await UserBook.create({
+                UserUID:uid,
+                BookBID:bid
+            })
+            res.status(200).send({success:true,message:"Book issued to user"})
+        }
     }
-    }
-    catch(error){
-        console.log("error: ",errror)
-    }  
+        catch(error){
+            res.status(400).send({success:false,message:"error"})
+        }  
 }
 
 

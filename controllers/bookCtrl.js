@@ -1,9 +1,10 @@
 const db=require('../models')
 
 const Book=db.book;
+const User=db.user;
 
-
-const {Sequelize,Op,QueryTypes}=require('sequelize')
+const {Sequelize,Op,QueryTypes}=require('sequelize');
+const { user } = require('../models');
 
 
 const getBooks=async(req,res)=>{
@@ -26,7 +27,7 @@ const addBook=async(req,res)=>{
         const price=req.body.price;
         const addDate=new Date();
         const addedDate=addDate.toString();
-        const bookId=req.body.bookId;
+        // const bookId=req.body.bookId;
 
         const data=await Book.create({
             bookName:bookName,
@@ -34,8 +35,8 @@ const addBook=async(req,res)=>{
             authorName:authorName,
             language:language,
             price:price,
-            publishDate:addedDate,
-            bookId:bookId
+            publishDate:addedDate
+            // bookId:bookId
         });
         res.status(200).json({data:data});
         
@@ -94,7 +95,6 @@ const searchBook=async(req,res)=>{
     }
 }
 
-// const issueBook=async
 
 
 module.exports={

@@ -8,6 +8,9 @@ const SequelizeStore=require("connect-session-sequelize")(session.Store);
 const db = require('./models/index')
 const csrfProtection=csrf()
 
+
+const auth=require("./middleware/auth")
+
 app.use(bodyParser.json())
 app.use(express.urlencoded({extended:'true'}))
 app.use(session({
@@ -39,16 +42,20 @@ app.get('/register',indexCtrl.register)
 app.get('/login',indexCtrl.login)
 app.get('/logout',indexCtrl.logout)
 app.get('/forgotPassword',indexCtrl.forgotPassword)
-
+app.get('/updatePassword',indexCtrl.updatePassword)
 
 app.post("/auth/register", useCtrl.registerUser)
 app.post("/auth/login",useCtrl.loginUser)
 app.post("/auth/forgotPassword",useCtrl.forgotPassword)
+app.post("/auth/updatePassword",useCtrl.updatePassword)
+
+
 
 //users
 app.get('/users',useCtrl.getUsers)
 app.post('/addUser',useCtrl.addUser)
-app.patch('/updateUser',useCtrl.updateUser)
+app.patch('/updateUser/:id',useCtrl.updateUser)
+// app.put('/putUser/:id',useCtrl.putUser)
 app.delete('/deleteUser/:id',useCtrl.deleteUser)
 
 app.get('/searchUser/:key',useCtrl.searchUser)
@@ -72,11 +79,17 @@ app.get('/searchAuthors/:key',authorCtrl.searchAuthor)
 
 //users-books
 app.get('/users/books',userBookCtrl.getUserBook)
-app.get('/user/book',userBookCtrl.addUserBook)
+app.post('/user/book',userBookCtrl.addUserBook)
 
 
 //author-books
 app.get('/author/books',authorCtrl.getAuthorBook)
+
+
+//test
+app.get('/test',auth,function(req,res){
+    res.status(200).send({success:true,msg:"Authenticated"})
+})
 
 const server=app.listen(PORT,function(){
     console.log(`Server running at http:localhost:${PORT}`)
