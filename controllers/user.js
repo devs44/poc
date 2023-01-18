@@ -1,25 +1,14 @@
-
-var session=require('express-session')
-
-var db=require('../models')
-
-var User=db.user;
-
-
-var {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize');
-var { sequelize, user } = require('../models');
+const {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequelize');
+const { sequelize, user } = require('../models');
 const config=require("../config/config")
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const nodemailer=require('nodemailer')
-const jwt=require('jsonwebtoken') 
 const randomString=require('randomstring')
 
+const db=require('../models')
+const User=db.user;
 
-
-
-
-
-
+//get all users
 const getUsers=async(req,res)=>{
     try{
         const data=await User.findAll({ });
@@ -28,7 +17,7 @@ const getUsers=async(req,res)=>{
         res.status(400).send({success:false,message:"Error"})
     }   
 }
-
+//add user
 const addUser=async(req,res)=>{
     try{
         const firstName=req.body.firstName;
@@ -46,9 +35,7 @@ const addUser=async(req,res)=>{
     }
     
 }
-
-
-
+//update user
 const updateUser=async(req,res)=>{
     try{
         const data=await User.update(req.body,{
@@ -64,7 +51,7 @@ const updateUser=async(req,res)=>{
         res.status(400).send({success:false,message:"error"})
     }
 }
-
+//delete user
 const deleteUser=async(req,res)=>{
     try{
         const data=await User.destroy({
@@ -77,7 +64,7 @@ const deleteUser=async(req,res)=>{
         res.status(400).send({success:false,message:"error"})
     }
 }
-
+//search user
 const searchUser=async(req,res)=>{
     const search=req.params.key
     try{
@@ -94,8 +81,7 @@ const searchUser=async(req,res)=>{
         res.status(400).send({success:false,message:"error"})
     }
 }
-
-
+//reset password
 const sendRestPasswordMail=async(name,email,token)=>{
     try{
         const transporter= await nodemailer.createTransport({
@@ -132,7 +118,7 @@ const sendRestPasswordMail=async(name,email,token)=>{
 
     }
 }
-
+//register user
 const registerUser=async(req,res)=>{
     try{
        const firstName=req.body.firstName
@@ -173,7 +159,7 @@ const registerUser=async(req,res)=>{
         res.send(400).send({success:false,message:"Error"})
     } 
 }
-
+//login user
 const loginUser=async(req,res)=>{
     try{
         const user=await User.findOne({
@@ -239,7 +225,7 @@ const loginUser=async(req,res)=>{
         res.status(400).send({success:false,msg:"error"})
     }
 }
-
+//forgot password
 const forgotPassword=async(req,res)=>{
     try{
         const email=req.body.email
@@ -269,8 +255,7 @@ const forgotPassword=async(req,res)=>{
         console.log("error: ",e.message)
     }
 }
-
-
+//update password
 const updatePassword=async(req,res)=>{
     try{
         // if(req.session.isLoggedIn){
@@ -297,11 +282,8 @@ module.exports={
     updateUser,
     deleteUser,
     searchUser,
-
     registerUser,
     loginUser,
     forgotPassword,
-    updatePassword
-
-    
+    updatePassword   
 }
