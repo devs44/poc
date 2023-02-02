@@ -23,13 +23,13 @@ const getAuthors=async(req,res)=>{
 
 const addAuthor=async(req,res)=>{
     try{
-        var addauthorName=req.body.authorName;
-        var addbookName=req.body.bookName;
-        var addauthorId=req.body.authorId;
+        var authorName=req.body.authorName;
+        var bookName=req.body.bookName;
+        var authorId=req.body.authorId;
         const data=await Author.create({
-            authorName:addauthorName,
-            bookName:addbookName,
-            authorId:addauthorId
+            authorName:authorName,
+            bookName:bookName,
+            authorId:authorId
         });
         res.status(200).json({data:data});
         
@@ -73,10 +73,10 @@ const getAuthorBook=async(req,res)=>{
     try{
         const data=await Author.findAll({
             attributes:['authorName','bookName'],
-            include:[{
-                model:Book,
-                attributes:['bookName']
-            }]
+            // include:[{
+            //     model:Book,
+            //     attributes:['bookName']
+            // }]
         })
         res.status(200).json({data:data});
     }

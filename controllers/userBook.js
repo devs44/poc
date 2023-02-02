@@ -9,15 +9,15 @@ const {Sequelize,Op,QueryTypes, ConnectionAcquireTimeoutError}=require('sequeliz
 const getUserBook=async(req,res)=>{
     try
     {
-        const data=await User.findAll({
-                        attibutes:["firstName","lastName","id"],
-                        include:{
-                            model:Book,
-                            attributes:['bookName']
-                        }
+        const data=await UserBook.findAll({
+                        // attibutes:["firstName","lastName","id"],
+                        // include:{
+                        //     model:Book,
+                        //     attributes:['bookName']
+                        // }
                     })
-        const bookData=await data.getBooks();
-        res.status(200).json({data:data,bookData:bookData})
+        // const bookData=await data.getBooks();
+        res.status(200).json({data:data})
     }
         catch(e){
             res.status(400).send({success:false,message:"error"})
@@ -30,7 +30,6 @@ const addUserBook=async(req,res)=>{
     try{
         const uid=req.body.uid;
         const bid=req.body.bid;
-        console.log(req.body.bid,"DDDDDDDd")
         const checkUserId=await User.findOne({
             where:{
                 UID:uid
@@ -41,9 +40,6 @@ const addUserBook=async(req,res)=>{
                 BID:bid
             }
         })
-        console.log(checkBookId,'DDDDDDDDDDDddd')
-    
-    
         if(checkUserId==null && checkBookId==null){
             res.send("Data not found")
         }else{

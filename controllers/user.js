@@ -8,6 +8,44 @@ const randomString=require('randomstring')
 const db=require('../models')
 const User=db.user;
 
+//reset password
+const sendRestPasswordMail=async(name,email,token)=>{
+    try{
+        const transporter= await nodemailer.createTransport({
+            host:'smtp.gmail.com',
+            port:587,
+            secure:false,
+            service:'gmail',
+            // requireTLS:true,
+            auth:{
+                user:config.emailUser,
+                pass:config.emailPassword
+            }
+        }) 
+        const mailOptions={
+            from:config.emailUser,
+            to:email,
+            subject:"For reset password",
+            html:'<p>Hi'+name+',Please copy the link<a href="http://localhost:5000/resetPassword?token='+token+'"></a> and reset your password</p>'
+
+        }
+        await transporter.sendMail(mailOptions,function(error,info){
+            if(error){
+                console.log(error)
+                // res.send(400).send({success:false,message:"Unable to send"})
+            }
+            else{
+                console.log("email has been sent")
+                // res.send(200).send({success:true,message:"Email has been sent,kindly check your mail"})
+            }
+        })
+    }
+    catch(error){
+        console.log(error)
+        // res.send(400).json({success:false,message:"Error"})
+
+    }
+}
 //get all users
 const getUsers=async(req,res)=>{
     try{
@@ -48,6 +86,7 @@ const updateUser=async(req,res)=>{
         res.status(200).send({success:true,message:"Data has been updated"});
     }
     catch(e){
+        console.log(e)
         res.status(400).send({success:false,message:"error"})
     }
 }
@@ -81,43 +120,7 @@ const searchUser=async(req,res)=>{
         res.status(400).send({success:false,message:"error"})
     }
 }
-//reset password
-const sendRestPasswordMail=async(name,email,token)=>{
-    try{
-        const transporter= await nodemailer.createTransport({
-            host:'smtp.gmail.com',
-            port:587,
-            secure:false,
-            service:'gmail',
-            // requireTLS:true,
-            auth:{
-                user:config.emailUser,
-                pass:config.emailPassword
-            }
-        })
-        
-        const mailOptions={
-            from:config.emailUser,
-            to:email,
-            subject:"For reset password",
-            html:'<p>Hi'+name+',Please copy the link<a href="http://localhost:5000/resetPassword?token='+token+'"></a> and reset your password</p>'
 
-        }
-        await transporter.sendMail(mailOptions,function(error,info){
-            if(error){
-                res.send(400).send({success:false,message:"Unable to send"})
-                
-            }
-            else{
-                res.send(200).send({success:true,message:"Email has been sent,kindly check your mail"})
-            }
-        })
-    }
-    catch(error){
-        res.send(400).json({success:false,message:"Error"})
-
-    }
-}
 //register user
 const registerUser=async(req,res)=>{
     try{
@@ -135,13 +138,13 @@ const registerUser=async(req,res)=>{
         // return res.render('register',{
         //     message:'Email is already in use'
         // })
-        res.send(400).send({success:false,message:"Email is already in use"})
+        res.status(400).send({success:false,message:"Email is already in use"})
        }
        else if(password!=confirm_password){
         // return res.render('register',{
         //     message:'Passwords donot match!'
         // })
-        res.send(400).send({success:false,message:"Passwords doesnot match"})
+        res.status(400).send({success:false,message:"Passwords doesnot match"})
        }
        let hashedPassword=await bcrypt.hash(password,8)
        const data=await User.create({
@@ -153,10 +156,10 @@ const registerUser=async(req,res)=>{
     //    res.render('login',{
     //     message:'User registered'
     //    })
-       res.send(200).send({success:true,message:"user registered"})
+       res.status(200).send({success:true,message:"user registered"})
     }
     catch(error){
-        res.send(400).send({success:false,message:"Error"})
+        res.status(400).send({success:false,message:"Error"})
     } 
 }
 //login user
@@ -184,7 +187,6 @@ const loginUser=async(req,res)=>{
                 if(user.count==3 && user.pwdTimeStamp==null){
                     user.pwdTimeStamp=currentTime+(30*60000)
                     user.save()
-        
                     // res.render("login",{
                     //     message:"You  have been blocked for 30 minutes"
                     // })
@@ -246,9 +248,8 @@ const forgotPassword=async(req,res)=>{
         res.status(200).json({success:true,message:"Check your email"});
 
     }else{
-        res.render("forgot-password",{
-            message:"Email doesnot exists"
-        })
+        res.status(200).json({success:false,message:"email not registered"});
+
     }
     }
     catch(e){
@@ -259,19 +260,27 @@ const forgotPassword=async(req,res)=>{
 const updatePassword=async(req,res)=>{
     try{
         // if(req.session.isLoggedIn){
-            const UID=req.body.uid
-            const password=req.body.password
-            let hashedPassword=await bcrypt.hash(password,8)
+            const email=req.body.email
+            const oldPassword=req.body.oldPassword
+            const newPassword=req.body.newPassword
             const data=await User.findOne({
                 where:{
-                    UID:UID
+                    email:email
                 }
             })
-            data.password=hashedPassword
-            data.save()
-            res.status(200).send({success:true,msg:"Your password hasbeen updated"})
+            if(oldPassword==data.password){
+                let hashedPassword=await bcrypt.hash(newPassword,8)
+                data.password=hashedPassword
+                data.save()
+                res.status(200).send({success:true,msg:"Your password have been updated"})
+            }
+            else{
+                res.status(200).send({success:false,msg:"Your old password is not correct"})
+            }
+            
     }
     catch(error){
+        console.log(error)
         res.status(400).send({msg:"Error"})
     }
 }

@@ -1,6 +1,5 @@
 var express=require('express')
 var bodyParser=require('body-parser')
-var csrf=require('csurf')
 var session=require('express-session')
 var app =express()
 var PORT=5000
@@ -83,10 +82,6 @@ app.post('/user/book',userBook.addUserBook)
 app.get('/author/books',author.getAuthorBook)
 
 
-//test
-app.get('/test',auth,function(req,res){
-    res.status(200).send({success:true,msg:"Authenticated"})
-})
 
 const server=app.listen(PORT,function(){
     console.log(`Server running at http:localhost:${PORT}`)

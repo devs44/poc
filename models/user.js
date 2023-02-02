@@ -48,9 +48,7 @@ module.exports=(sequelize,DataTypes,Model)=>{
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
-    },
-   
-    
+    }, 
     {
       sequelize,
       modelName:'Users',
